@@ -1,6 +1,6 @@
 ---
 title: "Cuarto parcial de diseño experimental"
-author: "Joshelyn Yanori Mendoza Alfaro"
+author: "Joshelyn Mendoza"
 date: "20/1/2021"
 output: pdf_document
 ---
