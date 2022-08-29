@@ -1,0 +1,158 @@
+---
+title: "Cuarto parcial de diseño experimental"
+author: "Joshelyn Yanori Mendoza Alfaro"
+date: "20/1/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+En esta ocasión voy a trabajar con la base de datos titulada “baby_smoke.csv” extraída de OpenIntro Statistics, David Diez, Mine Cetinkaya-Rundel, Christopher Barr, and OpenIntro, tercera edición, capítulo 4 <https://www.openintro.org/book/os/>, la cual contiene información de 1000 madres y de sus respectivos hijos recién nacidos en Carolina del Norte correspondientes a un cierto año.
+
+NOTA IMPORTANTE: Me aseguraré de que el archivo baby_smoke.csv se encuentre en mi directorio de trabajo. Para identificar en mi directorio de trabajo voy a ejecutar el siguiente código: getwd()
+
+```{r}
+getwd()
+```
+*1) Realizar la lectura de la base de datos.*  
+```{r}
+# Ahora con la función read.csv() leeré mi base de datos titulada baby_smoke.csv
+bd <- read.csv("baby_smoke.csv") #IMPORTANTE: TIENE QUE ESTAR ENTRE COMILLAS
+# Y TIENE QUE TENER LA EXTENSIÓN .CSV PORQUE DE LO CONTRARIO NO FUNCIONA
+# Ahora con el comando View() veo los datos.
+View(bd) # Con el comando View() le doy un vistazo a mis datos.
+```
+
+Tengo información de las siguientes variables contenidas en la base de datos.
+
+*fage*: edad de la mamá
+
+*mage*: edad del papá
+
+*weeks*: número de semana de gestación al momento de nacer
+
+*weight*: peso del neonato medido en libras
+
+*gender*: sexo del neonato
+
+*habit*: indica si la madre fumó durante el embarazo
+
+```{r}
+# Utilizo el comando names() y este me muestra los encabezados o nombres de cada
+# una de las variables
+names(bd)
+```
+```{r}
+# Con el operador corchetes, puedo acceder a la información de
+# alguno de los sujetos o variable en específico.
+bd[3,5]
+# Con el operador signo de pesos $ puedo llamar una columna específica.
+bd$weight
+```
+*2) Revisar la estructura de los datos.*
+Voy a utilizar tres funciones para explorar los datos. La primer función es str(), la cual me dará la estructura de mis datos.
+```{r}
+str(bd)
+# Puedo observar que la variable "Weeks" es independiente
+# Mientras que la varible "weight" es dependiente
+```
+*3) Realizar un resumen de la estadística descriptiva de todas las variables*
+Luego uso el comando summary() para obtener un resumen de la estadística descriptiva de mi base de datos.
+```{r}
+summary(bd)
+# Puedo observar que el promedio de semanas de gestación es de 38.33 semanas
+# Mientras que el máximo peso observado en un bebé al nacer es de 11.750 libras
+```
+*4) Realizar un histograma de la variable weight*
+Voy a dar un vistazo a la distribución de la variable weight, para ello puedo usar el comando hist() que me da un histograma.
+```{r}
+hist(bd$weight)
+# Puedo observar que el histograma no tiene una distribución normal
+```
+*5) Obtener una muestra aleatoria*
+En esta parte voy a extraer una muestra aleatoria de 100 sujetos, en este caso bebés. Voy a observar alguna propiedad de alguna variable numérica, en este caso el peso de los bebés y finalmente, voy a observar la distribución de esa variable.
+```{r}
+# Con el operador corchetes [], la función nrow() y la función sample
+# Obtengo una muestra aleatoria simple de tamaño n=100
+muestra.aleatoria.simple <- bd[sample(1:nrow(bd), 100), ]
+View(muestra.aleatoria.simple) # Doy un vistazo a los datos de mi muestra
+# Luego calculo LA MEDIA DE MI MUESTRA
+# Además menciono que la función na.omit() resulta indispensable para
+# Quitar los NA o valores perdidos.
+media.de.peso <- mean (na.omit(muestra.aleatoria.simple$weight) )
+media.de.peso #Calculo la media de mi muestra.
+# Por último observo el histograma de mi muestra.
+hist(muestra.aleatoria.simple$weight)
+# Puedo observar que en mi muestra el peso promedio de los bebés es de 7.116 libras
+```
+*6) Obtener una muestra estratificada*
+En este muestreo quiero obtener una muestra de 100 sujetos, en el que 50 son madres que SI fumaron durante el embarazo (estrato 1) y 50 mamás que NO fumaron durante el embarazo (estrato 2), de manera aleatoria.
+ 
+```{r}
+# Para empezar, con la función subset() voy a filtrar solamente los sujetos
+# que corresponden las madres que SI fumaron durante el embarazo.
+bd.smoker <- subset(bd, habit=="smoker")
+View(bd.smoker)
+# Ahora si selecciono una muestra de 50 sujetos de la base de datos
+# que solo tiene mamás.
+muestra.estrato.smoker <- bd.smoker[sample(1:nrow(bd.smoker), 50), ]
+View(muestra.estrato.smoker)
+```
+
+```{r}
+# Para continuar, vuelvo a utilizar la función subset() para filtrar únicamente
+# los sujetos que pertenecen las madres que NO fumaron durante el embarazo.
+bd.nonsmoker <- subset(bd, habit =="nonsmoker")
+# Ahora selecciono una muestra de 50 sujetos de la base de datos
+# que tiene únicamente hombres.
+muestra.estrato.nonsmoker <- bd.nonsmoker [sample(1:nrow(bd.nonsmoker), 50), ]
+View(muestra.estrato.nonsmoker)
+```
+
+*7) ASignación aleatoria de sujetos*
+De acuerdo con el experimento, el diseño incluye un grupo control y un grupo experimental. Asignaré aleatoriamente a las mamás en alguno de los dos grupos.
+```{r}
+# Primero voy a leer la base de datos.
+lista.de.sujetos <- read.csv("lista.de.sujetos.csv")
+View(lista.de.sujetos) # Doy una revisión o vistazo.
+# Obtengo una muestra de n=500 a la que asignaré al grupo experimental.
+grupo.experimental <- lista.de.sujetos[sample(1:nrow(lista.de.sujetos), 500), ]
+View(grupo.experimental) #Doy un vistazo.
+# Ahora creo un vector lógico que me diga TRUE si el sujeto pertenece al 
+# grupo experimental y FALSE si no pertenece.
+Pertenece.al.grupo.experimental <- lista.de.sujetos$Id_lista.de.sujetos %in% grupo.experimental
+Pertenece.al.grupo.experimental
+```
+```{r}
+#Ahora voy a agregar este vector lógico a mi base de datos de sujetos.
+lista.de.sujetos$Pertenece.al.grupo.experimental <- Pertenece.al.grupo.experimental
+View(lista.de.sujetos) # Veo cómo quedó.
+# Por último, puedo hacer un filtro con cada grupo.
+grupo.control <- subset(lista.de.sujetos, Pertenece.al.grupo.experimental=="FALSE")
+View(grupo.control)
+grupo.experimental <- subset(lista.de.sujetos, Pertenece.al.grupo.experimental=="TRUE")
+View(grupo.experimental)
+```
+
+Adicionalmente, puedo verificar que ningún sujeto esté en ambos grupos
+```{r}
+# Con un operador lógico verificaré que no se dupliquen sujetos en los grupos.
+grupo.control==grupo.experimental
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
