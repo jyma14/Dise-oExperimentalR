@@ -1,0 +1,148 @@
+---
+title: "Muestreo y asignación aleatoria"
+author: "Joshelyn Mendoza"
+date: "12/1/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+En esta práctica veremos como hacer un muestreo aleatorio simple y uno estratificado, así como realizar la asignación aleatoria de sujetos a un grupo control y a uno experimental.
+
+*## Objetivo 1: Lectura de la base de datos*
+
+Trabajaremos con la base de datos YRBSS, la cual contiene información de 13583 estudiantes referente al Youth Risk Behavior Surveillance System <https://www.cdc.gov/healthyyouth/data/yrbs/data.htm> citado en OpenIntro Statistics, David Diez, Mine Cetinkaya-Rundel, Christopher Barr, and OpenIntro, tercera edición, capítulo 4 <https://www.openintro.org/book/os/>.
+
+IMPORTANTE: Debes asegurarte que el archivo yrbss.csv se encuentre en tu directorio de trabajo. Para identificar tu directorio de trabajo ejecuta el siguiente código: getwd()
+```{r}
+getwd()
+```
+
+```{r}
+# Ahora con la función read.csv() leo mi base de datos titulada yrbss.csv
+bd <- read.csv("yrbss.csv") #IMPORTANTE: TIENE QUE ESTAR ENTRE COMILLAS
+# Y TIENE QUE TENER LA EXTENSIÓN .CSV DE LO CONTRARIO NO FUNCIONA
+# Ahora con el comando View() veo los datos.
+View(bd) # Con el comando View() le echo un ojo a mis datos.
+```
+
+Notarás que tenemos información de las siguientes variables, y otras más.
+*age*: Edad del estudiante.
+
+*gender*: sexo del estudiante.
+
+*grade*: Grado en el High school.
+
+*height*: Estatura del estudiante en metros.
+
+*weight*: Peso del estudiante en kilogramos.
+
+*hekmet*: Frecuencia con que el estudiante usó casco al andar en bici en los últimos 12 meses.
+
+*active*: Número de días en los que relizó actividad física mayor a 60 minutos en los últimos siete días.
+
+*lifting*: Número de días en lo que realizó entrenamiento vigoroso (e.g. levantar pesas) durante los últimos siete días.
+```{r}
+# Con el comando names() me muestra los encabezados o nombres de las 
+# Variables
+names(bd)
+```
+```{r}
+# Con el operador corchetes, podemos acceder a la información de
+# algún sujeto o variable en específico.
+bd[3,5]
+# Con el operador signo de pesos $ puedo llamar una columna específica.
+bd$weight
+
+```
+*## Objetivo 2: Exploración descriptiva de los datos.*
+Vamos a utilizar tres funciones para explorar los datos. La primer función es str() y me da la estructura de mis datos.
+```{r}
+str(bd)
+```
+A continuación uso el comando summary() para obtener un resumen de la estadística descriptiva de mi base de datos.
+```{r}
+summary(bd)
+```
+Para echar un ojo a la distribución de alguna de las variables podemos usar el comando his() que nos da un histograma.
+```{r}
+hist(bd$weight)
+```
+*## Objetivo 3: Muestra aleatoria simple.*
+
+En este apartado vamos a extraer una muestra de 100 sujetos, vamos a observar alguna propiedad de alguna variable númerica y finalmente, vamos a observar la distribución de dicha variable.
+```{r}
+# Con el operador corchetes [], la función nrow() y la función sample
+# Obtengo una muestra aleatoria simple de tamaño n=100
+muestra.aleatoria.simple <- bd[sample(1:nrow(bd), 100), ]
+View(muestra.aleatoria.simple) #Echo un ojo a los datos de mi muestra
+# A continuación calculo LA MEDIA DE MI MUESTRA
+# Resaltando que la función na.omit() resulta indispensable para
+# Quitar los NA o valores perdidos.
+media.de.peso <- mean (na.omit(muestra.aleatoria.simple$weight) )
+media.de.peso #Calculo la media de mi muestra.
+# Por último observamos el histograma de la muestra.
+hist(muestra.aleatoria.simple$weight)
+```
+*## Objetivo 4: Muestreo estratificado*
+
+En este tipo de muestreo quiero obtener una muestra de 100 sujetos, en el que 50 sean mujeres y 50 sean hombres.
+
+```{r}
+# En el primer lugar con la función subset() filtro solamente los sujetos
+# que corresponden al género femenino
+bd.mujeres <- subset(bd, gender=="female")
+View(bd.mujeres)
+# Ahora si selecciono una muestra de 50 sujetos de la base de datos
+# que solo tiene mujeres.
+muestra.estrato.mujeres <- bd.mujeres[sample(1:nrow(bd.mujeres), 50), ]
+View(muestra.estrato.mujeres)
+```
+
+```{r}
+# Para continuar, vuelvo a utilizar la función subset() para filtrar únicamente
+# los sujetos que pertenecen al género masculino.
+bd.hombres <- subset(bd, gender =="male")
+# Ahora selecciono una muestra de 50 sujetos de la base de datos
+# que tiene únicamente hombres.
+muestra.estrato.hombres <- bd.hombres [sample(1:nrow(bd.hombres), 50), ]
+View(muestra.estrato.hombres)
+```
+
+*##Objetivo 5: ASignación aleatoria de sujetos*
+Supongamos que queremos a realizar un experimento social con los alumnos de la materia de Diseño de Experimentos, nuestro diseño incluye un grupo control y un grupo bajo tratamiento experimental. Asignemos aleatoriamente a nuestros voluntarios en alguno de los dos grupos.
+
+```{r}
+# En primer lugar vamos a leer la base de datos.
+sujetos <- read.csv("sujetos.csv")
+View(sujetos) # Doy una revisión o vistazo.
+# Obtengo una muestra de n=22 a la que asignaré al grupo experimental.
+grupo.experimental <- sujetos[sample(1:nrow(sujetos), 22), ]
+View(grupo.experimental) #Doy un vistazo.
+# Ahora creo un vector lógico que me diga TRUE si el sujeto pertenece al 
+# grupo experimental y FALSE si no pertenece.
+Pertenece.al.grupo.experimental <- sujetos$Id_Sujeto %in% grupo.experimental
+Pertenece.al.grupo.experimental
+```
+```{r}
+#Ahora voy a agregar este vector lógico a mi base de datos de sujetos.
+sujetos$Pertenece.al.grupo.experimental <- Pertenece.al.grupo.experimental
+View(sujetos) # Veo cómo quedó.
+# Por último, puedo hacer un filtro con cada grupo.
+grupo.control <- subset(sujetos, Pertenece.al.grupo.experimental=="FALSE")
+View(grupo.control)
+grupo.experimental <- subset(sujetos, Pertenece.al.grupo.experimental=="TRUE")
+View(grupo.experimental)
+```
+
+Adicionalmente, puedo verificar que ningún sujeto esté en ambos grupos
+```{r}
+# Con un operador lógico verificaré que no se dupliquen sujetos en los grupos.
+grupo.control==grupo.experimental
+```
+
+
+
+
+
