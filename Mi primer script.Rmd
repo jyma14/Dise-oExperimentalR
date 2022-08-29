@@ -1,0 +1,34 @@
+---
+title: "Mi primer script"
+author: "Joshelyn Mendoza"
+date: "6/1/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+*##Cálculo del área de un rectángulo*
+
+En este script vamos a programar el cálculo del área de un rectángulo que tiene una base de 23.156 cm y una altura de 37.689 cm.
+
+```{r}
+# En el primer lugar declaro la distancia de la base y la guardo en
+# una variable que se llame "base"
+base <- 23.156
+# Ahora llamo a la variable por su nombre solo para verificar 
+# que quedó bien declarada
+base
+# Ahora declaro una variable con la altura del rectángulo
+altura <- 37.689
+# Llamaré a la variable "altura" para verificar que si
+# quedó bien grabada.
+altura
+# Ahora calcularé el área del rectángulo
+area <- base * altura
+area # Llamo la variable por su nombre
+# Imprimo la variable "area" con un mensaje del resultado
+print(paste("El resultado del área es", area ))
+```
+
