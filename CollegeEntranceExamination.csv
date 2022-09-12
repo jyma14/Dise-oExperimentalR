@@ -1,0 +1,5 @@
+Calificacion,Escaso(P),Medio(A),Superior(S),Total
+Baja(L),105,60,55,220
+Mediana(M),70,175,145,390
+Alta(H),25,65,300,390
+Total,200,300,500,1000
